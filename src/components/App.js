@@ -8,6 +8,9 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
+import PaymentInput from './PaymentInput';
+import LoanList from './LoanList';
+
 const theme = createMuiTheme();
 
 const styles = theme => ({
@@ -25,47 +28,54 @@ const styles = theme => ({
    }
 });
 
-function App (props) {
-   const { classes } = props;
+class App extends React.Component {
+   constructor(props) {
+      super(props);
+   }
 
-   return (
-      <MuiThemeProvider theme={theme}>
-         <AppBar position="static" color="primary" className={classes.appBar}>
-            <Toolbar>
-               <Typography type="title" color="inherit">
-                  Loan Payoff Calculator
-               </Typography>
-            </Toolbar>
-         </AppBar>
-         <div className={classes.layoutContainer}>
-            <Grid container spacing={16} className={classes.container}>
-               <Grid item xs={9}>
-                  { /* <ChartContainer /> */ }
+   render() {
+      const { classes } = this.props;
+      return (
+         <MuiThemeProvider theme={theme}>
+            <AppBar position="static" color="primary" className={classes.appBar}>
+               <Toolbar>
+                  <Typography type="title" color="inherit">
+                     Loan Payoff Calculator
+                  </Typography>
+               </Toolbar>
+            </AppBar>
+            <div className={classes.layoutContainer}>
+               <Grid container spacing={16} className={classes.container}>
+                  <Grid item md={9} xs={12}>
+                     { /* <ChartContainer /> */ }
 
-                  <Paper className={classes.paper}>
-                     <Typography type="title" color="inherit">
-                        Loan Graph
-                     </Typography>
-                  </Paper>
+                     <Paper className={classes.paper}>
+                        <Typography type="title" color="inherit">
+                           Loan Graph
+                        </Typography>
+                     </Paper>
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                     <Paper className={classes.paper}>
+                        <Typography type="title" color="inherit">
+                           Payment Information
+                        </Typography>
+                        <PaymentInput />
+                     </Paper>
+                  </Grid>
+                  <Grid item xs={12}>
+                     <Paper className={classes.paper}>
+                        <Typography type="title" color="inherit">
+                           Loans
+                        </Typography>
+                        <LoanList />
+                     </Paper>
+                  </Grid>
                </Grid>
-               <Grid item xs={3}>
-                  <Paper className={classes.paper}>
-                     <Typography type="title" color="inherit">
-                        Payment Information
-                     </Typography>
-                  </Paper>
-               </Grid>
-               <Grid item xs={12}>
-                  <Paper className={classes.paper}>
-                     <Typography type="title" color="inherit">
-                        Loans
-                     </Typography>
-                  </Paper>
-               </Grid>
-            </Grid>
-         </div>
-      </MuiThemeProvider>
-   );
+            </div>
+         </MuiThemeProvider>
+      );
+   }
 }
 
 App.propTypes = {
