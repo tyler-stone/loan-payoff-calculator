@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
 import AppBar from 'material-ui/AppBar';
@@ -68,7 +69,7 @@ class App extends React.Component {
                         <Typography type="title" color="inherit">
                            Loans
                         </Typography>
-                        <LoanList />
+                        <LoanList loans={this.props.loans} />
                      </Paper>
                   </Grid>
                </Grid>
@@ -78,8 +79,14 @@ class App extends React.Component {
    }
 }
 
+function mapStateToProps(state) {
+	return {
+		loans: state.loanInfo.loans
+	};
+}
+
 App.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(App);
+export default connect(mapStateToProps)(withStyles(styles)(App));
