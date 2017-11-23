@@ -69,7 +69,7 @@ class App extends React.Component {
                         <Typography type="title" color="inherit">
                            Loans
                         </Typography>
-                        <LoanList loans={this.props.loans} />
+                        <LoanList />
                      </Paper>
                   </Grid>
                </Grid>

@@ -9,14 +9,14 @@ class PaymentInput extends React.Component {
 		super();
 	}
 
-	calculateRepayment() {
-		this.props.dispatch({ type: 'CALCULATE_REPAYMENT' });
+	calculateRepayment(payload) {
+		this.props.dispatch({ type: 'CALCULATE_REPAYMENT', payload });
 	}
 
 	render() {
 		return (
 			<div>
-				<TextField id="contribution" label="Monthly Contribution" margin="normal" fullWidth />
+				<TextField id="payment" label="Monthly Payment" margin="normal" fullWidth />
 				<Button raised color="primary" onClick={ this.calculateRepayment }>Calculate</Button>
 			</div>
 		);
@@ -25,7 +25,7 @@ class PaymentInput extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		monthlyContribution: state.loanInfo.monthlyContribution
+		monthlyPayment: state.loanInfo.monthlyPayment
 	};
 }
 
