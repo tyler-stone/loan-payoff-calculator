@@ -53,16 +53,16 @@ class App extends React.Component {
       this.config = renderChartConfig([]);
    }
 
-   componentWillReceiveProps() {
+   componentWillUpdate(nextProps) {
      let chartXSeries = [];
-      for (let loan of this.props.results) {
+      for (let loan of nextProps.results) {
         chartXSeries.push({
           name: loan.name,
           data: loan.monthTotals
         })
       }
       this.config = renderChartConfig(chartXSeries);
-      console.log(this.config);
+      console.log(this.props);
    }
 
    render() {
