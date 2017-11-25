@@ -16,8 +16,10 @@ const initialState = {
 
 const applyLoanInterestToPrincipal = (loans) => {
 	for (let loan of loans) {
-		let interest = loan.total * (loan.interestRate / 100 / 12);
-		loan.total += interest;
+		let monthIdx = loan.monthTotals.length - 1;
+		let interest = loan.monthTotals[monthIdx] * 
+			(loan.interestRate / 100 / 12);
+		loan.monthTotals.push(loan.monthTotals[monthIdx] + interest);
 	}
 };
 
@@ -26,12 +28,13 @@ const subtractMinPayments = (loans, budget) => {
 		// not yet accounting for budgets lower than minimum payment
 		// which would cause unexpected behavior with this current logic
 		if (budget > 0) {
-			if (loan.total >= loan.minPayment) {
+			let monthIdx = loan.monthTotals.length - 1;
+			if (loan.monthTotals[monthIdx] >= loan.minPayment) {
 				budget -= loan.minPayment;
-				loan.total -= loan.minPayment;
+				loan.monthTotals[monthIdx] -= loan.minPayment;
 			} else {
-				budget -= loan.total;
-				loan.total = 0;
+				budget -= loan.monthTotals[monthIdx];
+				loan.monthTotals[monthIdx] = 0;
 			}
 		}
 	}
@@ -43,13 +46,14 @@ const subtractFromHighInterest = (loans, budget) => {
 	loans.sort((a, b) => (a.interestRate < b.interestRate));
 
 	for (let loan of loans) {
-		if (loan.total > budget) {
-			loan.total -= budget;
+		let monthIdx = loan.monthTotals.length - 1;
+		if (loan.monthTotals[monthIdx] > budget) {
+			loan.monthTotals[monthIdx] -= budget;
 			budget = 0;
 			break;
 		} else {
-			budget -= loan.total;
-			loan.total = 0;
+			budget -= loan.monthTotals[monthIdx];
+			loan.monthTotals[monthIdx] = 0;
 		}
 	}
 
@@ -59,36 +63,26 @@ const subtractFromHighInterest = (loans, budget) => {
 const calculateRepaymentResults = state => {
 	let results = [];
 	let loanTotal = state.loans.reduce((acc, l) => acc + l.total, 0);
-	let initialLoans = [];
 
 	// parse loan values to usable float value
 	for (let loan of state.loans) {
-		initialLoans.push({
+		results.push({
 			...loan,
 			interestRate: parseFloat(loan.interestRate.replace(',','')),
 			minPayment: parseFloat(loan.minPayment.replace(',','')),
-			total: parseFloat(loan.total.replace(',',''))
+			monthTotals: [parseFloat(loan.total.replace(',',''))]
 		});
 	}
 
 	while (loanTotal > 0) {
 		let monthBudget = parseFloat(state.monthlyPayment.replace(',',''));
-		let monthLoans = [];
 		
-		if (results.length > 0) {
-			for (let loan of results[results.length - 1]) {
-				monthLoans.push({ ...loan });
-			}
-		} else {
-			monthLoans = initialLoans;
-		}
+		applyLoanInterestToPrincipal(results);
+		monthBudget = subtractMinPayments(results, monthBudget);
+		monthBudget = subtractFromHighInterest(results, monthBudget);
 		
-		applyLoanInterestToPrincipal(monthLoans);
-		monthBudget = subtractMinPayments(monthLoans, monthBudget);
-		monthBudget = subtractFromHighInterest(monthLoans, monthBudget);
-		
-		loanTotal = monthLoans.reduce((acc, l) => acc + l.total, 0);
-		results.push(monthLoans);
+		loanTotal = results.reduce((acc, l) => 
+			acc + l.monthTotals[l.monthTotals.length - 1], 0);	
 	}
 
 	console.log(results);

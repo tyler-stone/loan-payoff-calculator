@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactHighcharts from 'react-highcharts';
 import { withStyles } from 'material-ui/styles';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import { connect } from 'react-redux';
@@ -29,9 +30,39 @@ const styles = theme => ({
    }
 });
 
+const renderChartConfig = (xseries) => ({
+  title: {
+    text: 'Loan Repayment'
+  },
+  yAxis: {
+      title: {
+          text: 'Loan Balance'
+      }
+  },
+  legend: {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'middle'
+  },
+  series: xseries
+});
+
 class App extends React.Component {
    constructor(props) {
       super(props);
+      this.config = renderChartConfig([]);
+   }
+
+   componentWillReceiveProps() {
+     let chartXSeries = [];
+      for (let loan of this.props.results) {
+        chartXSeries.push({
+          name: loan.name,
+          data: loan.monthTotals
+        })
+      }
+      this.config = renderChartConfig(chartXSeries);
+      console.log(this.config);
    }
 
    render() {
@@ -54,6 +85,7 @@ class App extends React.Component {
                         <Typography type="title" color="inherit">
                            Loan Graph
                         </Typography>
+                        <ReactHighcharts ref="chart" config={this.config} />
                      </Paper>
                   </Grid>
                   <Grid item md={3} xs={12}>
@@ -81,7 +113,8 @@ class App extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		loans: state.loanInfo.loans
+    loans: state.loanInfo.loans,
+    results: state.loanInfo.results
 	};
 }
 
